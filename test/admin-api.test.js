@@ -101,6 +101,50 @@ test('administrator can sign in with the stored hash and upload safe menu images
   assert.equal(unsafeUpload.response.status, 400);
 });
 
+test('guest reviews are moderated before publication and moderation requires an administrator', async function () {
+  const invalid = await request('/api/reviews', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ guestName: 'Hana Bekele', rating: 6, reviewText: 'A pleasant stay.' })
+  }, '');
+  assert.equal(invalid.response.status, 400);
+
+  const submit = await request('/api/reviews', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      guestName: 'Hana Bekele',
+      rating: 5,
+      reviewText: 'The room was comfortable and the team was welcoming.'
+    })
+  }, '');
+  assert.equal(submit.response.status, 201);
+  assert.equal(submit.result.status, 'pending');
+
+  const publicBeforeModeration = await request('/api/reviews', {}, '');
+  assert.equal(publicBeforeModeration.result.reviewCount, 0);
+  assert.equal(publicBeforeModeration.result.reviews.length, 0);
+
+  const protectedList = await request('/api/admin/reviews', {}, '');
+  assert.equal(protectedList.response.status, 401);
+
+  const pendingList = await request('/api/admin/reviews?status=pending');
+  assert.equal(pendingList.response.status, 200);
+  assert.equal(pendingList.result[0].id, submit.result.id);
+
+  const approve = await request(`/api/admin/reviews/${submit.result.id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: 'approved' })
+  });
+  assert.equal(approve.response.status, 200);
+
+  const publicAfterModeration = await request('/api/reviews', {}, '');
+  assert.equal(publicAfterModeration.result.reviewCount, 1);
+  assert.equal(publicAfterModeration.result.averageRating, 5);
+  assert.equal(publicAfterModeration.result.reviews[0].guestName, 'Hana Bekele');
+});
+
 test('room inventory is real, floor-aware, and prevents overlapping bookings', async function () {
   const addRoom = await request('/api/admin/rooms', {
     method: 'POST',

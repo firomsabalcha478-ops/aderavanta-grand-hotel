@@ -61,6 +61,7 @@
                 <button type="button" class="admin-tab" data-panel="restaurant">Restaurant</button>
                 <button type="button" class="admin-tab" data-panel="menu">Menu</button>
                 <button type="button" class="admin-tab" data-panel="customers">Customers</button>
+                <button type="button" class="admin-tab" data-panel="reviews">Reviews</button>
                 <button type="button" class="admin-tab" data-panel="reports">Reports</button>
             </nav>
             <p class="admin-message" id="dashboardMessage" role="status" aria-live="polite"></p>
@@ -148,6 +149,19 @@
                         <input id="customerSearch" type="search" placeholder="Search name, phone or email" aria-label="Search customers">
                     </div>
                     <div id="customersList"></div>
+                </div>
+            </section>
+
+            <section class="admin-panel" id="panel-reviews" hidden>
+                <div class="admin-section-card">
+                    <div class="admin-list-toolbar">
+                        <div>
+                            <h2>Guest reviews</h2>
+                            <p>Approve reviews before publishing them on the hotel website.</p>
+                        </div>
+                        <button class="btn btn-outline" id="refreshReviews" type="button">Refresh reviews</button>
+                    </div>
+                    <div id="adminReviewsList"></div>
                 </div>
             </section>
 

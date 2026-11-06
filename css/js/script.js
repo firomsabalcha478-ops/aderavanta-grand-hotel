@@ -53,6 +53,16 @@ const scrollProgress = document.getElementById("scrollProgress");
 const backToTop = document.getElementById("backToTop");
 const header = document.querySelector(".header");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const isAfaanOromo = function () {
+    return document.documentElement.lang === "om";
+};
+
+document.querySelectorAll("img:not(.hero-image):not(#galleryViewerImage)").forEach(function (image) {
+    if (!image.hasAttribute("loading")) {
+        image.loading = "lazy";
+    }
+    image.decoding = "async";
+});
 const navTargets = navLinks
     ? Array.from(navLinks.querySelectorAll('a[href^="#"]'))
         .map(function (link) {
@@ -84,7 +94,8 @@ const revealSelector = [
     ".facility-card",
     ".gallery-grid img",
     ".contact-card",
-    ".map-container"
+    ".map-container",
+    ".review-card"
 ].join(", ");
 
 function observeRevealTargets(root) {
@@ -181,7 +192,7 @@ window.addEventListener("scroll", function () {
 }, { passive: true });
 
 window.addEventListener("resize", function () {
-    if (window.innerWidth > 1100 && navLinks && menuToggle && navLinks.classList.contains("open")) {
+    if (window.innerWidth > 1200 && navLinks && menuToggle && navLinks.classList.contains("open")) {
         navLinks.classList.remove("open");
         menuToggle.setAttribute("aria-expanded", "false");
         menuToggle.setAttribute("aria-label", "Open navigation menu");
@@ -455,6 +466,8 @@ if (foodMenuContainer) {
             const image = document.createElement("img");
             image.src = item.image;
             image.alt = item.name;
+            image.loading = "lazy";
+            image.decoding = "async";
             image.loading = "lazy";
             image.addEventListener("error", function () {
                 if (item.id >= 100000 && !image.dataset.fallback) {
@@ -888,7 +901,9 @@ if (bookingForm) {
         }
 
         if (!arrivalInput.value || !departureInput.value) {
-            staySummary.textContent = "Choose check-in and check-out dates to see your stay length.";
+            staySummary.textContent = isAfaanOromo()
+                ? "Yeroo turtii keessanii ilaaluuf guyyaa seensaa fi ba'umsaa filadhaa."
+                : "Choose check-in and check-out dates to see your stay length.";
             return 0;
         }
 
@@ -897,7 +912,9 @@ if (bookingForm) {
         const nights = Math.round((departure - arrival) / 86400000);
 
         if (nights <= 0) {
-            staySummary.textContent = "Check-out must be at least one day after check-in.";
+            staySummary.textContent = isAfaanOromo()
+                ? "Guyyaan ba'umsaa guyyaa seensaa booda yoo xiqqaate guyyaa tokko ta'uu qaba."
+                : "Check-out must be at least one day after check-in.";
             return 0;
         }
 
@@ -906,9 +923,15 @@ if (bookingForm) {
         const total = Number.isSafeInteger(nightlyRate) && roomCount
             ? nightlyRate * nights * roomCount
             : null;
-        staySummary.textContent = total === null
-            ? `Your stay: ${nights} ${nights === 1 ? "night" : "nights"}. Select rooms or beds to see the estimate.`
-            : `${roomSelect.value} · ${floorSelect.value || "Any floor"} · ${roomCount} ${roomSelect.value === "Shared Bed Space" ? (roomCount === 1 ? "bed" : "beds") : (roomCount === 1 ? "room" : "rooms")} · ${nights} ${nights === 1 ? "night" : "nights"} · Estimated total: ${new Intl.NumberFormat("en").format(total)} ETB`;
+        if (isAfaanOromo()) {
+            staySummary.textContent = total === null
+                ? `Turtii keessan: halkan ${nights}. Tilmaama ilaaluuf baay'ina kutaalee ykn sireewwanii filadhaa.`
+                : `${roomSelect.value} · ${floorSelect.value || "Dabaala kamiyyuu"} · ${roomCount} · halkan ${nights} · Waliigala tilmaamaa: ${new Intl.NumberFormat("en").format(total)} ETB`;
+        } else {
+            staySummary.textContent = total === null
+                ? `Your stay: ${nights} ${nights === 1 ? "night" : "nights"}. Select rooms or beds to see the estimate.`
+                : `${roomSelect.value} · ${floorSelect.value || "Any floor"} · ${roomCount} ${roomSelect.value === "Shared Bed Space" ? (roomCount === 1 ? "bed" : "beds") : (roomCount === 1 ? "room" : "rooms")} · ${nights} ${nights === 1 ? "night" : "nights"} · Estimated total: ${new Intl.NumberFormat("en").format(total)} ETB`;
+        }
         return nights;
     }
 
@@ -930,16 +953,22 @@ if (bookingForm) {
         if (!selectedRoom || !arrivalInput.value || !departureInput.value ||
             departureInput.value <= arrivalInput.value) {
             if (bookingAvailability) {
-                bookingAvailability.textContent = "Choose a room and valid dates to check availability.";
+                bookingAvailability.textContent = isAfaanOromo()
+                    ? "Argama ilaaluuf kutaa fi guyyaa sirrii filadhaa."
+                    : "Choose a room and valid dates to check availability.";
             }
             return;
         }
 
         if (bookingAvailability) {
-            bookingAvailability.textContent = "Checking room availability…";
+            bookingAvailability.textContent = isAfaanOromo()
+                ? "Argama kutaa sakatta'aa jira…"
+                : "Checking room availability…";
         }
         if (selectedLabel) {
-            selectedLabel.textContent = "Checking availability for your dates…";
+            selectedLabel.textContent = isAfaanOromo()
+                ? "Guyyaa keessaniif argama sakatta'aa jira…"
+                : "Checking availability for your dates…";
         }
 
         const query = new URLSearchParams({
@@ -965,13 +994,23 @@ if (bookingForm) {
 
             if (selectedLabel) {
                 selectedLabel.textContent = result.available
-                    ? `${result.availableRooms} available for your dates`
-                    : "No availability for these dates";
+                    ? isAfaanOromo()
+                        ? `Guyyaa keessaniif argama ${result.availableRooms} jira`
+                        : `${result.availableRooms} available for your dates`
+                    : isAfaanOromo()
+                        ? "Guyyaa kanaaf kutaan hin jiru"
+                        : "No availability for these dates";
             }
             if (bookingAvailability) {
-                bookingAvailability.textContent = result.available
-                    ? `${result.availableRooms} available · ${requestedRoomCount} selected · ${new Intl.NumberFormat("en").format(result.nightlyRate * nights * requestedRoomCount)} ETB estimated total`
-                    : `Only ${result.availableRooms} available for those dates. Reduce the number requested or select different dates.`;
+                if (isAfaanOromo()) {
+                    bookingAvailability.textContent = result.available
+                        ? `Argama: ${result.availableRooms} · Filatame: ${requestedRoomCount} · Waliigala tilmaamaa: ${new Intl.NumberFormat("en").format(result.nightlyRate * nights * requestedRoomCount)} ETB`
+                        : `Guyyaa kanaaf ${result.availableRooms} qofatu jira. Baay'ina hir'isaa yookaan guyyaa biraa filadhaa.`;
+                } else {
+                    bookingAvailability.textContent = result.available
+                        ? `${result.availableRooms} available · ${requestedRoomCount} selected · ${new Intl.NumberFormat("en").format(result.nightlyRate * nights * requestedRoomCount)} ETB estimated total`
+                        : `Only ${result.availableRooms} available for those dates. Reduce the number requested or select different dates.`;
+                }
             }
         } catch (error) {
             if (error.name === "AbortError") {
@@ -1374,11 +1413,12 @@ if (bookingForm) {
             }
 
             const totalPrice = new Intl.NumberFormat("en").format(result.totalPrice);
-            notice.textContent =
-                `Booking request received. Reference ${result.bookingReference} · Status: pending hotel confirmation · ${result.roomType} · ` +
-                `${result.floor || "Any floor"} · ${result.roomCount} ` +
-                `${result.roomType === "Shared Bed Space" ? (result.roomCount === 1 ? "bed" : "beds") : (result.roomCount === 1 ? "room" : "rooms")} · ` +
-                `${result.nights} ${result.nights === 1 ? "night" : "nights"} · Total ${totalPrice} ETB. Payment is pending; no online payment was taken.`;
+            notice.textContent = isAfaanOromo()
+                ? `Gaaffiin kireeffannaa fudhatame. Lakkoofsa ${result.bookingReference} · Mirkaneessa hoteelaa eegaa · ${result.roomType} · ${result.nights} · Waliigala ${totalPrice} ETB. Kaffaltiin eeggataa dha; kaffaltiin interneetii irratti hin raawwatamne.`
+                : `Booking request received. Reference ${result.bookingReference} · Status: pending hotel confirmation · ${result.roomType} · ` +
+                    `${result.floor || "Any floor"} · ${result.roomCount} ` +
+                    `${result.roomType === "Shared Bed Space" ? (result.roomCount === 1 ? "bed" : "beds") : (result.roomCount === 1 ? "room" : "rooms")} · ` +
+                    `${result.nights} ${result.nights === 1 ? "night" : "nights"} · Total ${totalPrice} ETB. Payment is pending; no online payment was taken.`;
             bookingForm.reset();
             departureInput.min = todayDate;
             updateStaySummary();
@@ -1392,6 +1432,59 @@ if (bookingForm) {
             submitBookingButton.textContent = "Request Room Booking";
         }
     });
+
+    function refreshAvailabilityWhenVisible() {
+        if (!document.hidden && roomSelect.value && arrivalInput.value && departureInput.value) {
+            checkBookingAvailability();
+        }
+    }
+
+    window.setInterval(refreshAvailabilityWhenVisible, 60000);
+    document.addEventListener("visibilitychange", refreshAvailabilityWhenVisible);
+
+    const whatsappBookingButton = document.getElementById("whatsappBookingButton");
+    if (whatsappBookingButton) {
+        whatsappBookingButton.addEventListener("click", function () {
+            if (!bookingForm.reportValidity()) return;
+
+            const nights = updateStaySummary();
+            if (nights < 1) {
+                departureInput.reportValidity();
+                return;
+            }
+
+            const guestCount = Number(document.getElementById("guests").value);
+            const roomCount = Number(roomCountSelect.value);
+            const nightlyRate = bookingRates.get(roomSelect.value);
+            const estimatedTotal = Number.isSafeInteger(nightlyRate)
+                ? `\nEstimated accommodation total: ${new Intl.NumberFormat("en").format(nightlyRate * nights * roomCount)} ETB`
+                : "";
+            const oromo = isAfaanOromo();
+            const message = [
+                oromo
+                    ? "Aderavanta Grand Hotel, waa'ee turtii kana gaafachuu nan barbaada:"
+                    : "Hello Aderavanta Grand Hotel, I would like to ask about this stay:",
+                `${oromo ? "Maqaa" : "Name"}: ${document.getElementById("fullname").value.trim()}`,
+                `${oromo ? "Bilbila" : "Phone"}: ${document.getElementById("phone").value.trim()}`,
+                `${oromo ? "Kutaa" : "Room"}: ${roomSelect.value}`,
+                `${oromo ? "Dabaala filatame" : "Preferred floor"}: ${floorSelect.value || (oromo ? "Filannoo hin jiru" : "No preference")}`,
+                `${oromo ? "Keessummoota" : "Guests"}: ${guestCount}`,
+                `${oromo ? "Baay'ina sireewwanii/kutaalee" : roomSelect.value === "Shared Bed Space" ? "Beds" : "Rooms"}: ${roomCount}`,
+                `${oromo ? "Guyyaa seensaa" : "Check-in"}: ${arrivalInput.value}`,
+                `${oromo ? "Guyyaa ba'umsaa" : "Check-out"}: ${departureInput.value}`,
+                `${oromo ? "Halkan" : "Nights"}: ${nights}`,
+                `${oromo ? "Mala kaffaltii filatame" : "Payment preference"}: ${document.getElementById("payment").value}`,
+                `${oromo ? "Gaaffii addaa" : "Special requests"}: ${document.getElementById("requests").value.trim() || (oromo ? "Hin jiru" : "None")}`,
+                estimatedTotal,
+                "",
+                oromo
+                    ? "Maaloo argamaa fi gatii dhumaa mirkaneessaa. Gaaffiin kun kireeffannaa mirkanaa'e akka hin taane nan hubadha."
+                    : "Please confirm availability and the final price. I understand this inquiry is not a confirmed reservation."
+            ].filter(Boolean).join("\n");
+            const whatsappUrl = `https://wa.me/251954278081?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+        });
+    }
 
 }
 
@@ -1414,11 +1507,12 @@ if (bookingStatusForm) {
             });
             const result = await response.json();
             if (!response.ok) throw new Error(result.error || "Unable to check booking status.");
-            statusResult.textContent =
-                `${result.bookingReference} · ${result.status} · ${result.roomType} · ` +
-                `${result.checkIn} to ${result.checkOut} · ${result.nights} nights · ` +
-                `${new Intl.NumberFormat("en").format(result.totalPrice)} ETB · ` +
-                `Payment: ${result.paymentStatus}.`;
+            statusResult.textContent = isAfaanOromo()
+                ? `${result.bookingReference} · ${result.status} · ${result.roomType} · ${result.checkIn} hanga ${result.checkOut} · Halkan ${result.nights} · ${new Intl.NumberFormat("en").format(result.totalPrice)} ETB · Kaffaltii: ${result.paymentStatus}.`
+                : `${result.bookingReference} · ${result.status} · ${result.roomType} · ` +
+                    `${result.checkIn} to ${result.checkOut} · ${result.nights} nights · ` +
+                    `${new Intl.NumberFormat("en").format(result.totalPrice)} ETB · ` +
+                    `Payment: ${result.paymentStatus}.`;
             statusResult.classList.add("is-success");
         } catch (error) {
             console.error("Unable to check booking status:", error);
@@ -1426,6 +1520,246 @@ if (bookingStatusForm) {
             statusResult.classList.add("is-error");
         }
     });
+}
+
+// =============================================
+// 7. GUEST REVIEWS
+// =============================================
+
+const reviewList = document.getElementById("reviewList");
+const reviewSummary = document.getElementById("reviewsSummary");
+const reviewForm = document.getElementById("reviewForm");
+const reviewNotice = document.getElementById("reviewNotice");
+
+async function loadGuestReviews() {
+    if (!reviewList || !reviewSummary) return;
+    try {
+        const response = await fetch("/api/reviews", { cache: "no-store" });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Unable to load guest reviews.");
+        if (!Number.isSafeInteger(result.reviewCount) || !Array.isArray(result.reviews)) {
+            throw new Error("Guest review response was invalid.");
+        }
+
+        reviewSummary.textContent = result.reviewCount
+            ? `${result.averageRating.toFixed(1)} / 5 · ${result.reviewCount} ${result.reviewCount === 1 ? "published review" : "published reviews"}`
+            : "No published guest reviews yet.";
+        reviewList.replaceChildren();
+        if (!result.reviews.length) {
+            const empty = document.createElement("p");
+            empty.className = "review-empty";
+            empty.textContent = "Be one of the first guests to share your experience.";
+            reviewList.appendChild(empty);
+            return;
+        }
+
+        result.reviews.forEach(function (review) {
+            const card = document.createElement("article");
+            card.className = "review-card";
+            const name = document.createElement("h3");
+            name.textContent = review.guestName;
+            const stars = document.createElement("p");
+            stars.className = "review-stars";
+            stars.setAttribute("aria-label", `${review.rating} out of 5 stars`);
+            stars.textContent = `${"★".repeat(review.rating)}${"☆".repeat(5 - review.rating)}`;
+            const text = document.createElement("p");
+            text.textContent = review.reviewText;
+            const date = document.createElement("time");
+            date.className = "review-date";
+            date.dateTime = review.createdAt;
+            date.textContent = new Date(`${review.createdAt.replace(" ", "T")}Z`).toLocaleDateString();
+            card.append(name, stars, text, date);
+            reviewList.appendChild(card);
+        });
+        observeRevealTargets(reviewList);
+    } catch (error) {
+        console.error("Unable to load guest reviews:", error);
+        reviewSummary.textContent = error.message || "Guest reviews could not be loaded.";
+        reviewList.replaceChildren();
+    }
+}
+
+if (reviewForm && reviewNotice) {
+    reviewForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        if (!reviewForm.reportValidity()) return;
+        const values = new FormData(reviewForm);
+        const submitButton = reviewForm.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        reviewNotice.className = "review-notice";
+        reviewNotice.textContent = "Submitting your review for moderation…";
+        try {
+            const response = await fetch("/api/reviews", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    guestName: values.get("guestName").trim(),
+                    rating: Number(values.get("rating")),
+                    reviewText: values.get("reviewText").trim()
+                })
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || "Your review could not be submitted.");
+            if (result.status !== "pending") throw new Error("Review moderation status was invalid.");
+            reviewForm.reset();
+            reviewNotice.textContent = "Thank you. Your review was received and will appear after hotel moderation.";
+            reviewNotice.classList.add("is-success");
+        } catch (error) {
+            console.error("Unable to submit guest review:", error);
+            reviewNotice.textContent = error.message || "Unable to submit your review.";
+            reviewNotice.classList.add("is-error");
+        } finally {
+            submitButton.disabled = false;
+        }
+    });
+    loadGuestReviews();
+}
+
+// =============================================
+// 8. ENGLISH AND AFAAN OROMO
+// =============================================
+
+const languageToggle = document.getElementById("languageToggle");
+const originalSiteText = new WeakMap();
+const afaanOromoTranslations = [
+    ['#navlinks a[href="#home"]', "Fuula Jalqabaa"],
+    ['#navlinks a[href="#about"]', "Waa'ee Keenya"],
+    ['#navlinks a[href="#floors"]', "Dabaalee Hoteelichaa"],
+    ['#navlinks a[href="#rooms"]', "Kutaa fi Bakka Ciisichaa"],
+    ['#navlinks a[href="#booking"]', "Kutaa Kireeffadhu"],
+    ['#navlinks a[href="#pool"]', "Boolii"],
+    ['#navlinks a[href="#dining"]', "Nyaataa fi Dhugaatii"],
+    ['#navlinks a[href="#restaurant-order"]', "Ajaja Nyaataa"],
+    ['#navlinks a[href="#services"]', "Tajaajiloota"],
+    ['#navlinks a[href="#gallery"]', "Suuraalee"],
+    ['#navlinks a[href="#contact"]', "Nu Quunnamaa"],
+    ['#navlinks a[href="#location"]', "Bakka Keenya"],
+    ['#navlinks .language-toggle', "English"],
+    ['.hero-subtitle', "Bakka Qananiin Keessummeessummaa Olaanaa Itti Argamu"],
+    ['.hero h1', "Mana Keessanitti Dhaga'aa, Yeroo Hundaa Gammadaa"],
+    ['.hero-description', "Daldalaaf yoo imaltan, maatii keessan wajjin boqottan, yookaan Adaamaa daawwattan, turtii keessan yaadatamaa akka ta'uuf isin gargaarra."],
+    ['.hero-buttons .btn-primary', "Turtii Keessan Kireeffadhaa"],
+    ['.hero-buttons .btn-outline', "Kutaa Keenya Ilaalaa"],
+    ['#about .section-label', "WAA'EE HOTEELLA KEENYAA"],
+    ['#about h2', "Aderavanta Grand Hotel Baga Nagaan Dhuftan"],
+    ['#floors .section-heading .section-label', "GAMOO HOTEELICHAA"],
+    ['#floors .section-heading h2', "Dabaalee Hoteelichaa Daawwadhaa"],
+    ['#rooms .section-heading .section-label', "BAKKA TURTII"],
+    ['#rooms .section-heading h2', "Kutaa Isiniif Ta'u Filadhaa"],
+    ['#rooms .section-heading p:not(.section-label)', "Kutaa namoota dhuunfaa, hiriyoota, maatii fi gareewwaniif mijatu filadhaa. Guyyoota keessan filachuun argama kutaa fi gatii waliigalaa ilaalaa."],
+    ['#booking .booking-info .section-label', "TURTII KEESSAN KIREESSADHAA"],
+    ['#booking .booking-info h2', "Kutaa Keessan Har'a Kireeffadhaa"],
+    ['#booking .booking-info > p:not(.section-label)', "Guyyoota turtii fi gosa kutaa filadhaa. Argamni kutaa fi waliigalli kaffaltii yeroo gaafata kireeffannaa ergitan mirkanaa'a."],
+    ['#booking .booking-contact h3', "Gargaarsa Barbaadduu?"],
+    ['#bookingForm h3', "Odeeffannoo Kireeffannaa"],
+    ['label[for="roomSearch"]', "Kutaalee barbaadaa"],
+    ['.whatsapp-booking-btn + .form-note', "WhatsApp gaaffii kireeffannaa qofa bana. Kutaa hin qabsiisu; mirkaneessa hoteelaa eegaa."],
+    ['#notice + .form-note', "Gaaffiin kireeffannaa keessanii argama kutaa irratti hundaa'uun mirkanaa'ee kuufama. Kaffaltiin interneetii irratti hin raawwatamu; hoteelli kaffaltii harkaan mirkaneessa."],
+    ['label[for="fullname"]', "Maqaa Guutuu *"],
+    ['label[for="phone"]', "Lakkoofsa Bilbilaa *"],
+    ['label[for="email"]', "Teessoo Imeelii *"],
+    ['label[for="room"]', "Gosa Kutaa *"],
+    ['label[for="floor"]', "Dabaala Filatame"],
+    ['label[for="guests"]', "Baay'ina Keessummootaa *"],
+    ['label[for="payment"]', "Mala Kaffaltii Filatame *"],
+    ['label[for="roomCount"]', "Baay'ina Kutaalee ykn Sireewwanii *"],
+    ['label[for="arrival"]', "Guyyaa Seensaa *"],
+    ['label[for="departure"]', "Guyyaa Ba'umsaa *"],
+    ['label[for="requests"]', "Gaaffii Addaa"],
+    ['#submitBooking', "Gaaffii Kireeffannaa Ergaa"],
+    ['#whatsappBookingButton', "Waa'ee turtii kana WhatsApp irratti gaafadhaa"],
+    ['#bookingStatusTitle', "Haala Kireeffannaa Keessanii Ilaalaa"],
+    ['#bookingStatusTitle + p', "Lakkoofsa kireeffannaa fi lakkoofsa bilbilaa galchaa."],
+    ['label[for="statusBookingReference"]', "Lakkoofsa kireeffannaa"],
+    ['label[for="statusBookingPhone"]', "Lakkoofsa bilbilaa"],
+    ['#pool .pool-content h2', "Boolii"],
+    ['#dining .section-heading h2', "Nyaataa fi Dhugaatii"],
+    ['#reviewsTitle', "Yaada fi Madaallii Keessummootaa"],
+    ['#reviewForm h3', "Muuxannoo Turtii Keessanii Qoodaa"],
+    ['label[for="reviewGuestName"]', "Maqaa Keessanii"],
+    ['label[for="reviewRating"]', "Madaallii Keessanii"],
+    ['label[for="reviewText"]', "Waa'ee turtii keessanii nuuf barreessaa"],
+    ['#reviewForm button[type="submit"]', "Yaada Ergaa"],
+    ['#gallery .section-heading h2', "Suuraalee Hoteelichaa Ilaalaa"],
+    ['#contact h2', "Isin Simachuuf As Jirra"],
+    ['#contact .contact-content > p:not(.section-label)', "Tajaajila keessummaa, kireeffannaa fi gaaffii turtii keessanii irratti gareen keenya isin gargaaruuf qophaa'a."],
+    ['#contact .contact-card:nth-child(1) h3', "Bilbila"],
+    ['#contact .contact-card:nth-child(2) h3', "Imeelii"],
+    ['#contact .contact-card:nth-child(3) h3', "Telegram"],
+    ['#contact .contact-card:nth-child(4) h3', "WhatsApp"],
+    ['#contact .contact-card:nth-child(4) a', "Garee keenya waliin haasa'aa"],
+    ['#contact .contact-card:nth-child(5) h3', "Bakka"],
+    ['#contact .contact-card:nth-child(5) p', "Adaamaa, Itoophiyaa"],
+    ['#location .section-heading h2', "Bakka Keenya"],
+    ['#location .section-heading p:not(.section-label)', "Aderavanta Grand Hotel Adaamaa, Itoophiyaa keessatti argama."],
+    ['#location .map-link a', "Google Maps Banadhaa"]
+];
+
+function setSiteLanguage(language) {
+    const useOromo = language === "om";
+    afaanOromoTranslations.forEach(function ([selector, oromoText]) {
+        document.querySelectorAll(selector).forEach(function (element) {
+            if (!originalSiteText.has(element)) {
+                originalSiteText.set(element, element.textContent);
+            }
+            element.textContent = useOromo ? oromoText : originalSiteText.get(element);
+        });
+    });
+
+    const optionTranslations = [
+        ['#room option[value=""]', "Gosa kutaa filadhaa"],
+        ['#floor option[value=""]', "Filannoo hin jiru"],
+        ['#guests option[value=""]', "Baay'ina keessummootaa filadhaa"],
+        ['#payment option[value=""]', "Mala kaffaltii filadhaa"],
+        ['#roomCount option[value=""]', "Baay'ina kutaalee ykn sireewwanii filadhaa"],
+        ['#bookingStatusForm button[type="submit"]', "Kireeffannaa Ilaalaa"],
+        ['#floor option[value="First Floor"]', "Dabaala Tokkoffaa"],
+        ['#floor option[value="Second Floor"]', "Dabaala Lammaffaa"],
+        ['#floor option[value="Third Floor"]', "Dabaala Sadaffaa"],
+        ['#floor option[value="Fourth Floor"]', "Dabaala Afraffaa"]
+    ];
+    optionTranslations.forEach(function ([selector, oromoText]) {
+        document.querySelectorAll(selector).forEach(function (element) {
+            if (!originalSiteText.has(element)) {
+                originalSiteText.set(element, element.textContent);
+            }
+            element.textContent = useOromo ? oromoText : originalSiteText.get(element);
+        });
+    });
+
+    const placeholders = [
+        [document.getElementById("fullname"), "Maqaa keessan guutuu galchaa."],
+        [document.getElementById("phone"), "09XXXXXXXX"],
+        [document.getElementById("email"), "example@gmail.com"],
+        [document.getElementById("requests"), "Gaaffii dabalataa asitti barreessaa…"],
+        [document.getElementById("roomSearch"), "“Maatii” ykn “Deluxe” yaalaa"]
+    ];
+    placeholders.forEach(function ([element, oromoText]) {
+        if (!element) return;
+        if (!element.dataset.englishPlaceholder) {
+            element.dataset.englishPlaceholder = element.placeholder;
+        }
+        element.placeholder = useOromo ? oromoText : element.dataset.englishPlaceholder;
+    });
+
+    document.documentElement.lang = useOromo ? "om" : "en";
+    languageToggle.textContent = useOromo ? "English" : "Afaan Oromo";
+    languageToggle.setAttribute(
+        "aria-label",
+        useOromo ? "Switch language to English" : "Switch language to Afaan Oromo"
+    );
+    languageToggle.dataset.language = useOromo ? "om" : "en";
+    const arrivalInput = document.getElementById("arrival");
+    if (arrivalInput) {
+        arrivalInput.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+}
+
+if (languageToggle) {
+    languageToggle.addEventListener("click", function () {
+        setSiteLanguage(languageToggle.dataset.language === "om" ? "en" : "om");
+    });
+    setSiteLanguage("en");
 }
 
 

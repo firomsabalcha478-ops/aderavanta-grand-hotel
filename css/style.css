@@ -196,12 +196,12 @@ p {
 .navlinks {
     display: flex;
     align-items: center;
-    gap: 22px;
+    gap: 10px;
 }
 
 .navlinks a {
     color: var(--dark);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     transition: color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
 }
@@ -226,6 +226,30 @@ p {
 .navlinks .nav-book:hover {
     background: var(--gold-hover);
     color: var(--white);
+}
+
+.language-toggle {
+    flex: 0 0 auto;
+    padding: 8px 11px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--cream-secondary);
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.language-toggle:hover {
+    border-color: var(--gold);
+    background: var(--white);
+    color: var(--gold-hover);
+}
+
+.language-toggle:focus-visible {
+    outline: 3px solid var(--gold-light);
+    outline-offset: 3px;
 }
 
 .menu-toggle {
@@ -260,18 +284,28 @@ p {
 /* =============== HERO SECTION =============== */
 
 .hero {
+    isolation: isolate;
     min-height: 680px;
     position: relative;
     display: flex;
     align-items: center;
-    background:
-        url("https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=2000&q=90")
-        center/cover no-repeat;
+    overflow: hidden;
+}
+
+.hero-image {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
 }
 
 .hero-overlay {
     position: absolute;
     inset: 0;
+    z-index: -1;
     background: linear-gradient(
         90deg,
         rgba(24, 28, 31, 0.68) 0%,
@@ -1323,6 +1357,24 @@ p {
     color: var(--gold-hover);
 }
 
+.booking-contact .whatsapp-link {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 8px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    background: #198754;
+    color: var(--white);
+    font-weight: 700;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.booking-contact .whatsapp-link:hover {
+    background: #146c43;
+    color: var(--white);
+    transform: translateY(-2px);
+}
+
 .booking-form {
     background: var(--white);
     padding: 35px;
@@ -1405,6 +1457,19 @@ p {
     border: none;
 }
 
+.whatsapp-booking-btn {
+    width: 100%;
+    margin-top: 10px;
+    border-color: #198754;
+    color: #146c43;
+}
+
+.whatsapp-booking-btn:hover {
+    border-color: #146c43;
+    background: #198754;
+    color: var(--white);
+}
+
 .notice {
     display: none;
     background: #e7f6e9;
@@ -1477,7 +1542,7 @@ p {
 
 .contact-details {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 18px;
     margin-top: 42px;
 }
@@ -1524,6 +1589,89 @@ p {
 
 .contact-details a:hover {
     color: var(--gold-text);
+}
+
+.reviews {
+    background: var(--white);
+}
+
+.reviews-summary {
+    margin: -18px auto 28px;
+    color: var(--primary-dark);
+    text-align: center;
+    font-weight: 700;
+}
+
+.review-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+    margin-bottom: 32px;
+}
+
+.review-card,
+.review-empty {
+    padding: 22px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--cream);
+    box-shadow: var(--shadow);
+}
+
+.review-card h3 {
+    margin-bottom: 6px;
+    color: var(--primary-dark);
+    font-size: 18px;
+}
+
+.review-stars {
+    margin-bottom: 10px;
+    color: var(--gold-hover);
+    letter-spacing: 2px;
+}
+
+.review-card p {
+    overflow-wrap: anywhere;
+}
+
+.review-date {
+    display: block;
+    margin-top: 12px;
+    color: var(--gray);
+    font-size: 12px;
+}
+
+.review-form {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 28px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--cream-secondary);
+    box-shadow: var(--shadow);
+}
+
+.review-form h3 {
+    margin-bottom: 18px;
+    color: var(--primary-dark);
+}
+
+.review-notice {
+    margin-top: 12px;
+    color: var(--primary-dark);
+}
+
+.review-notice.is-error {
+    color: #8d302a;
+}
+
+.review-notice.is-success {
+    color: #246b32;
+}
+
+.review-empty {
+    grid-column: 1 / -1;
+    text-align: center;
 }
 
 
@@ -1662,7 +1810,7 @@ p {
 
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
     .navbar {
         position: relative;
         min-height: 72px;
@@ -1696,6 +1844,11 @@ p {
     .navlinks a {
         padding: 11px 0;
         font-size: 14px;
+    }
+
+    .navlinks .language-toggle {
+        align-self: flex-start;
+        margin-top: 8px;
     }
 }
 
@@ -1741,6 +1894,11 @@ p {
     .navlinks a {
         padding: 12px 0;
         font-size: 14px;
+    }
+
+    .navlinks .language-toggle {
+        align-self: flex-start;
+        margin-top: 8px;
     }
 
     .navlinks .nav-book {
@@ -1857,7 +2015,10 @@ p {
 
     .hero {
         min-height: 530px;
-        background-position: 85% center;
+    }
+
+    .hero-image {
+        object-position: 85% center;
     }
 
     .hero h1 {

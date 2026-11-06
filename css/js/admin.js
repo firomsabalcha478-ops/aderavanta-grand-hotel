@@ -176,6 +176,7 @@ async function loadPanel(name) {
         restaurant: loadOrders,
         menu: loadMenu,
         customers: loadCustomers,
+        reviews: loadReviews,
         reports: loadReports
     };
     if (loaders[name]) await loaders[name]();
@@ -688,6 +689,60 @@ async function loadCustomers() {
         });
     } catch (error) {
         console.error("Unable to load customers:", error);
+        message(dashboardMessage, error.message, true);
+    }
+}
+
+document.getElementById("refreshReviews").addEventListener("click", loadReviews);
+document.getElementById("adminReviewsList").addEventListener("click", async function (event) {
+    const button = event.target.closest("button[data-review-id]");
+    if (!button) return;
+    button.disabled = true;
+    try {
+        await request(`/reviews/${button.dataset.reviewId}`, {
+            method: "PATCH",
+            body: JSON.stringify({ status: button.dataset.status })
+        });
+        message(dashboardMessage, `Review ${button.dataset.status}.`, false);
+        await loadReviews();
+    } catch (error) {
+        console.error("Unable to moderate guest review:", error);
+        message(dashboardMessage, error.message, true);
+    } finally {
+        button.disabled = false;
+    }
+});
+
+async function loadReviews() {
+    try {
+        const reviews = await request("/reviews?status=pending");
+        const list = document.getElementById("adminReviewsList");
+        list.replaceChildren();
+        if (!reviews.length) {
+            list.appendChild(node("p", "", "There are no reviews waiting for moderation."));
+            return;
+        }
+        reviews.forEach((review) => {
+            const card = node("article", "admin-card");
+            card.appendChild(node("h3", "", `${review.guestName} · ${"★".repeat(review.rating)}${"☆".repeat(5 - review.rating)}`));
+            card.appendChild(node("p", "", review.reviewText));
+            card.appendChild(node("p", "", new Date(review.createdAt.replace(" ", "T") + "Z").toLocaleString()));
+            const actions = node("div", "admin-card-actions");
+            [
+                ["approved", "Approve"],
+                ["rejected", "Reject"]
+            ].forEach(([status, label]) => {
+                const button = node("button", status === "approved" ? "btn btn-primary" : "btn btn-outline", label);
+                button.type = "button";
+                button.dataset.reviewId = String(review.id);
+                button.dataset.status = status;
+                actions.appendChild(button);
+            });
+            card.appendChild(actions);
+            list.appendChild(card);
+        });
+    } catch (error) {
+        console.error("Unable to load guest reviews:", error);
         message(dashboardMessage, error.message, true);
     }
 }

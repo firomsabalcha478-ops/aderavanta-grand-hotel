@@ -37,6 +37,14 @@ Payment selection records a preference only. No payment gateway is connected. Pa
 
 Restaurant orders are independent of room reservations, use prices stored in the database, and receive a separate order reference. Menu images may use existing local images or be uploaded as JPEG, PNG, or WebP (up to 2 MB).
 
+## Guest-facing features
+
+- Room availability is calculated from active room records and overlapping pending or confirmed reservations. The booking form refreshes the database check as guests change their dates and selections, and periodically while the page remains open.
+- Guest reviews are stored as pending until an administrator approves them in **Reviews** on the management dashboard. Only approved reviews are shown publicly.
+- The website provides an English/Afaan Oromo language toggle for the main navigation, home, room, booking, and contact journeys.
+- WhatsApp contact links open a message to the hotel's listed phone number. The location section links to Google Maps for Aderavanta Grand Hotel in Adama.
+- Payment preferences can be recorded with a reservation, but there is no online payment gateway yet. Customers are not charged online; administrators verify payments manually.
+
 ## Tests
 
 Run the API and validation tests with:

@@ -9,6 +9,13 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="preload"
+        as="image"
+        href="https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&amp;fit=crop&amp;w=1600&amp;q=85"
+        imagesrcset="https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&amp;fit=crop&amp;w=1200&amp;q=80 1200w, https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&amp;fit=crop&amp;w=2000&amp;q=85 2000w"
+        imagesizes="100vw"
+    >
 
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 
@@ -49,6 +56,9 @@
                 <a href="#gallery">Gallery</a>
                 <a href="#contact">Contact Us</a>
                 <a href="#location">Our Location</a>
+                <button class="language-toggle" id="languageToggle" type="button" aria-label="Switch language to Afaan Oromo">
+                    Afaan Oromo
+                </button>
             </nav>
 
         </div>
@@ -59,6 +69,15 @@
 
     <section class="hero" id="home">
 
+        <img
+            class="hero-image"
+            src="https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&amp;fit=crop&amp;w=1600&amp;q=85"
+            srcset="https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&amp;fit=crop&amp;w=1200&amp;q=80 1200w, https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&amp;fit=crop&amp;w=2000&amp;q=85 2000w"
+            sizes="100vw"
+            alt=""
+            fetchpriority="high"
+            decoding="async"
+        >
         <div class="hero-overlay"></div>
 
         <div class="container hero-content">
@@ -315,6 +334,8 @@
                     <img
                         src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=900&q=85"
                         alt="Standard hotel room"
+                        loading="lazy"
+                        decoding="async"
                     >
 
                     <div class="room-info">
@@ -339,6 +360,8 @@
                     <img
                         src="https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=900&q=85"
                         alt="Deluxe hotel room"
+                        loading="lazy"
+                        decoding="async"
                     >
 
                     <div class="room-info">
@@ -363,6 +386,8 @@
                     <img
                         src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=900&q=85"
                         alt="VIP luxury suite"
+                        loading="lazy"
+                        decoding="async"
                     >
 
                     <div class="room-info">
@@ -385,6 +410,8 @@
                     <img
                         src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=900&q=85"
                         alt="Elegant hotel suite"
+                        loading="lazy"
+                        decoding="async"
                     >
 
                     <div class="room-info">
@@ -409,6 +436,8 @@
                     <img
                         src="https://images.unsplash.com/photo-1595576508898-0ad5c879a061?auto=format&fit=crop&w=900&q=85"
                         alt="Twin hotel room"
+                        loading="lazy"
+                        decoding="async"
                     >
 
                     <div class="room-info">
@@ -433,6 +462,8 @@
                     <img
                         src="https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=900&q=85"
                         alt="Family hotel room"
+                        loading="lazy"
+                        decoding="async"
                     >
 
                     <div class="room-info">
@@ -457,6 +488,8 @@
                     <img
                         src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=900&q=85"
                         alt="Shared accommodation"
+                        loading="lazy"
+                        decoding="async"
                     >
 
                     <div class="room-info">
@@ -511,6 +544,9 @@
                             firomsabalcha478@gmail.com
                         </a>
                     </p>
+                    <a class="whatsapp-link" href="https://wa.me/251954278081?text=Hello%20Aderavanta%20Grand%20Hotel%2C%20I%27d%20like%20to%20ask%20about%20booking%20a%20room." target="_blank" rel="noopener noreferrer">
+                        Chat with us on WhatsApp
+                    </a>
                 </div>
 
             </div>
@@ -624,7 +660,7 @@
 
                         <select id="payment" name="payment" required>
                             <option value="">Select payment method</option>
-                            <option value="Cash at Hotel">Cash at Hotel</option>
+                            <option value="Cash at hotel">Cash at Hotel</option>
                             <option value="Telebirr">Telebirr</option>
                             <option value="CBE Birr">CBE Birr</option>
                             <option value="Bank transfer">Bank transfer</option>
@@ -700,6 +736,12 @@
                 <button type="submit" class="btn btn-primary submit-btn" id="submitBooking">
                     Request Room Booking
                 </button>
+                <button type="button" class="btn btn-outline whatsapp-booking-btn" id="whatsappBookingButton">
+                    Ask about this stay on WhatsApp
+                </button>
+                <small class="form-note">
+                    WhatsApp opens a booking inquiry only. It does not reserve a room; wait for hotel confirmation.
+                </small>
 
                 <p id="notice" class="notice" role="status" aria-live="polite"></p>
 
@@ -985,31 +1027,43 @@
                 <img
                     src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=900&q=85"
                     alt="Hotel exterior"
+                    loading="lazy"
+                    decoding="async"
                 >
 
                 <img
                     src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=900&q=85"
                     alt="Hotel bedroom"
+                    loading="lazy"
+                    decoding="async"
                 >
 
                 <img
                     src="https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=900&q=85"
                     alt="Swimming pool"
+                    loading="lazy"
+                    decoding="async"
                 >
 
                 <img
                     src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=85"
                     alt="Restaurant"
+                    loading="lazy"
+                    decoding="async"
                 >
 
                 <img
                     src="https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=900&q=85"
                     alt="Deluxe room"
+                    loading="lazy"
+                    decoding="async"
                 >
 
                 <img
                     src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=85"
                     alt="Hotel interior"
+                    loading="lazy"
+                    decoding="async"
                 >
 
             </div>
@@ -1022,6 +1076,49 @@
         <button class="gallery-viewer-close" id="galleryViewerClose" type="button" aria-label="Close photo viewer">&times;</button>
         <img id="galleryViewerImage" src="" alt="">
     </dialog>
+
+    <!-- ================= GUEST REVIEWS ================= -->
+
+    <section class="section reviews" id="reviews" aria-labelledby="reviewsTitle">
+        <div class="container">
+            <div class="section-heading">
+                <p class="section-label">GUEST EXPERIENCES</p>
+                <h2 id="reviewsTitle">Guest Reviews &amp; Ratings</h2>
+                <p>Read feedback shared by our guests. New reviews are checked by the hotel before they appear.</p>
+            </div>
+            <div class="reviews-summary" id="reviewsSummary" role="status" aria-live="polite">
+                Loading guest reviews…
+            </div>
+            <div class="review-list" id="reviewList" aria-live="polite"></div>
+            <form class="review-form" id="reviewForm">
+                <h3>Share your stay experience</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="reviewGuestName">Your name</label>
+                        <input id="reviewGuestName" name="guestName" type="text" minlength="2" maxlength="80" autocomplete="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewRating">Your rating</label>
+                        <select id="reviewRating" name="rating" required>
+                            <option value="">Choose a rating</option>
+                            <option value="5">5 — Excellent</option>
+                            <option value="4">4 — Very good</option>
+                            <option value="3">3 — Good</option>
+                            <option value="2">2 — Fair</option>
+                            <option value="1">1 — Poor</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="reviewText">Tell us about your stay</label>
+                    <textarea id="reviewText" name="reviewText" rows="4" minlength="10" maxlength="1000" required></textarea>
+                </div>
+                <button class="btn btn-primary" type="submit">Submit review</button>
+                <p class="review-notice" id="reviewNotice" role="status" aria-live="polite"></p>
+                <small class="form-note">Reviews are published after hotel moderation.</small>
+            </form>
+        </div>
+    </section>
 
 
     <!-- ================= CONTACT SECTION ================= -->
@@ -1060,6 +1157,12 @@
                 </div>
 
                 <div class="contact-card">
+                    <svg class="contact-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.52 3.48A11.86 11.86 0 0 0 12.06 0C5.48 0 .12 5.36.12 11.94c0 2.1.55 4.15 1.59 5.96L.02 24l6.25-1.64a11.9 11.9 0 0 0 5.79 1.48h.01c6.58 0 11.94-5.36 11.94-11.94a11.86 11.86 0 0 0-3.49-8.42ZM12.06 21.8h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.71.97.99-3.62-.23-.37a9.86 9.86 0 0 1-1.52-5.25c0-5.45 4.44-9.89 9.88-9.89 2.64 0 5.12 1.03 6.99 2.9a9.83 9.83 0 0 1 2.9 6.99c0 5.45-4.44 9.89-9.9 9.89Zm5.42-7.4c-.3-.15-1.76-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.47-2.4-1.49-.89-.79-1.49-1.76-1.67-2.06-.18-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.48-.5-.67-.51h-.57c-.2 0-.52.08-.8.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.2 5.08 4.49.71.3 1.27.49 1.7.63.72.23 1.37.2 1.89.12.58-.09 1.76-.72 2.01-1.42.25-.7.25-1.3.18-1.42-.08-.12-.28-.2-.58-.35Z"/></svg>
+                    <h3>WhatsApp</h3>
+                    <a href="https://wa.me/251954278081?text=Hello%20Aderavanta%20Grand%20Hotel%2C%20I%27d%20like%20to%20get%20in%20touch." target="_blank" rel="noopener noreferrer">Chat with our team</a>
+                </div>
+
+                <div class="contact-card">
                     <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>
                     <h3>Location</h3>
                     <p>Adama, Ethiopia</p>
@@ -1082,7 +1185,7 @@
             </div>
             <div class="map-container">
                 <iframe
-                    src="https://www.google.com/maps?q=Adama%2C%20Ethiopia&output=embed"
+                    src="https://www.google.com/maps?q=Aderavanta%20Grand%20Hotel%2C%20Adama%2C%20Ethiopia&output=embed"
                     width="100%"
                     height="400"
                     style="border:0;"
@@ -1094,7 +1197,7 @@
             </div>
             <div class="map-link">
                 <a
-                    href="https://maps.google.com/maps?q=Adama%2C%20Ethiopia"
+                    href="https://maps.google.com/maps?q=Aderavanta%20Grand%20Hotel%2C%20Adama%2C%20Ethiopia"
                     target="_blank"
                     rel="noopener noreferrer">
                     Open Google Maps
@@ -1140,6 +1243,7 @@
                 <a href="#gallery">Photo Gallery</a>
                 <a href="#contact">Contact Us</a>
                 <a href="#location">Our Location</a>
+                <a href="#reviews">Guest Reviews</a>
 
             </div>
 
