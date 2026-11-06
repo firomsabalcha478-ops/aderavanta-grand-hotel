@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Hotel Management | Aderavanta Grand Hotel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="admin-page">
+    <header class="header">
+        <div class="container navbar">
+            <a href="/" class="logo">
+                <span>ADERAVANTA</span>
+                <small>GRAND HOTEL</small>
+            </a>
+            <a class="admin-home-link" href="/">Back to hotel website</a>
+        </div>
+    </header>
+
+    <main class="admin-main container">
+        <div class="admin-heading">
+            <p class="section-label">HOTEL OPERATIONS</p>
+            <h1>Management Dashboard</h1>
+            <p>Manage reservations, verified inventory, restaurant orders and guest services.</p>
+        </div>
+
+        <section class="admin-login" id="adminLoginSection" aria-labelledby="adminLoginTitle">
+            <h2 id="adminLoginTitle">Administrator sign in</h2>
+            <p id="adminLoginDescription">Sign in with your administrator username and password.</p>
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label for="adminUsername">Username</label>
+                    <input id="adminUsername" name="username" type="text" autocomplete="username" minlength="3" maxlength="40" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword">Password</label>
+                    <input id="adminPassword" name="password" type="password" autocomplete="current-password" minlength="12" maxlength="200" required>
+                </div>
+                <div class="form-group" id="adminConfirmGroup" hidden>
+                    <label for="adminConfirmPassword">Confirm password</label>
+                    <input id="adminConfirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="12" maxlength="200">
+                </div>
+                <button class="btn btn-primary" id="adminLoginButton" type="submit">Sign in</button>
+            </form>
+            <p class="admin-message" id="adminLoginMessage" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="admin-dashboard" id="adminDashboard" hidden>
+            <div class="admin-dashboard-toolbar">
+                <p id="adminWelcome"></p>
+                <button class="admin-logout" id="adminLogout" type="button">Sign out</button>
+            </div>
+            <nav class="admin-tabs" aria-label="Dashboard sections">
+                <button type="button" class="admin-tab is-active" data-panel="overview">Overview</button>
+                <button type="button" class="admin-tab" data-panel="rooms">Rooms</button>
+                <button type="button" class="admin-tab" data-panel="bookings">Bookings</button>
+                <button type="button" class="admin-tab" data-panel="restaurant">Restaurant</button>
+                <button type="button" class="admin-tab" data-panel="menu">Menu</button>
+                <button type="button" class="admin-tab" data-panel="customers">Customers</button>
+                <button type="button" class="admin-tab" data-panel="reports">Reports</button>
+            </nav>
+            <p class="admin-message" id="dashboardMessage" role="status" aria-live="polite"></p>
+
+            <section class="admin-panel is-active" id="panel-overview">
+                <div class="admin-summary-grid" id="adminSummary"></div>
+                <div class="admin-section-card">
+                    <h2>Payment verification</h2>
+                    <p>Bookings remain unpaid until a payment is manually verified.</p>
+                    <div id="pendingPayments"></div>
+                </div>
+            </section>
+
+            <section class="admin-panel" id="panel-rooms" hidden>
+                <div class="admin-section-card">
+                    <h2>Room types and nightly rates</h2>
+                    <div id="roomTypesList"></div>
+                </div>
+                <form class="admin-section-card admin-form-grid" id="roomForm">
+                    <h2>Add a verified room or bed space</h2>
+                    <label>Room number<input name="roomNumber" maxlength="20" required></label>
+                    <label>Room type<select name="roomType" id="roomTypeSelect" required></select></label>
+                    <label>Floor<select name="floor" required>
+                        <option>First Floor</option><option>Second Floor</option>
+                        <option>Third Floor</option><option>Fourth Floor</option>
+                    </select></label>
+                    <label>Bed capacity<input name="bedCapacity" type="number" min="1" max="20" value="2" required></label>
+                    <button class="btn btn-primary" type="submit">Add room</button>
+                </form>
+                <div class="admin-section-card">
+                    <h2>Room inventory and current occupancy</h2>
+                    <div class="admin-table-wrap"><table><thead><tr>
+                        <th>Room</th><th>Type</th><th>Floor</th><th>Beds</th><th>Price/night</th><th>State</th><th>Action</th>
+                    </tr></thead><tbody id="roomsTable"></tbody></table></div>
+                </div>
+            </section>
+
+            <section class="admin-panel" id="panel-bookings" hidden>
+                <div class="admin-section-card">
+                    <div class="admin-list-toolbar">
+                        <h2>Reservations</h2>
+                        <input id="bookingSearch" type="search" placeholder="Search reference, guest or phone" aria-label="Search bookings">
+                    </div>
+                    <div id="bookingsList"></div>
+                </div>
+            </section>
+
+            <section class="admin-panel" id="panel-restaurant" hidden>
+                <div class="admin-section-card">
+                    <div class="admin-list-toolbar">
+                        <h2>Restaurant orders</h2>
+                        <button class="btn btn-outline" id="refreshOrders" type="button">Refresh orders</button>
+                    </div>
+                    <div id="adminOrderList"></div>
+                </div>
+            </section>
+
+            <section class="admin-panel" id="panel-menu" hidden>
+                <form class="admin-section-card admin-form-grid" id="menuForm">
+                    <h2>Add a food or drink</h2>
+                    <label>Menu type<select name="kind"><option value="food">Food</option><option value="drinks">Drink</option></select></label>
+                    <label>Category<input name="category" maxlength="60" required></label>
+                    <label>Name<input name="name" maxlength="100" required></label>
+                    <label>Price (ETB)<input name="price" type="number" min="1" required></label>
+                    <label>Image URL or local path<input name="image" maxlength="500" placeholder="/public/images/food/..." required></label>
+                    <label>Upload image<input name="imageFile" type="file" accept="image/jpeg,image/png,image/webp"></label>
+                    <label>Description<textarea name="description" maxlength="500" rows="2"></textarea></label>
+                    <button class="btn btn-primary" type="submit">Add menu item</button>
+                </form>
+                <div class="admin-section-card">
+                    <div class="admin-list-toolbar">
+                        <h2>Menu items</h2>
+                        <select id="menuKindFilter" aria-label="Filter menu type">
+                            <option value="food">Food</option><option value="drinks">Drinks</option>
+                        </select>
+                    </div>
+                    <div id="menuList"></div>
+                </div>
+            </section>
+
+            <section class="admin-panel" id="panel-customers" hidden>
+                <div class="admin-section-card">
+                    <div class="admin-list-toolbar">
+                        <h2>Customers</h2>
+                        <input id="customerSearch" type="search" placeholder="Search name, phone or email" aria-label="Search customers">
+                    </div>
+                    <div id="customersList"></div>
+                </div>
+            </section>
+
+            <section class="admin-panel" id="panel-reports" hidden>
+                <div class="admin-section-card">
+                    <div class="admin-list-toolbar">
+                        <h2>Sales reports</h2>
+                        <select id="reportPeriod" aria-label="Report period">
+                            <option value="daily">Daily</option><option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <div id="reportsList"></div>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <script src="/css/js/admin.js"></script>
+</body>
+</html>

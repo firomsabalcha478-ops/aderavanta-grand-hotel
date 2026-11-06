@@ -1,0 +1,7 @@
+Food photographs are stored locally in this directory for reliable site loading.
+Source: Unsplash (images.unsplash.com), downloaded at 800px wide.
+License: https://unsplash.com/license
+Image filenames are mapped to food menu items in server.js.
+
+Drinks and beverages use Unsplash-hosted image URLs served from images.unsplash.com.
+License: https://unsplash.com/license
